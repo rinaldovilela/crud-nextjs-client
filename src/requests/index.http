@@ -1,0 +1,16 @@
+GET http://localhost:3333/developers
+
+###
+
+POST http://localhost:3333/developers
+Content-Type: application/json
+
+###
+PUT http://localhost:3333/developers/1
+content-type: application/json
+
+###
+DELETE http://localhost:3333/developers/:id
+
+
+
