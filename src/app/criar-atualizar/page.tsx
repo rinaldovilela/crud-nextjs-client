@@ -1,11 +1,10 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid"; // Importe a função v4 do uuid
+import { v4 as uuidv4 } from "uuid";
 import { api } from "../../services/api";
 
 interface Developer {
-  id: string; // Altere o tipo de id para string
+  id: string;
   name: string;
 }
 
@@ -13,7 +12,7 @@ export default function PageOne() {
   const [loading, setLoading] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [devs, setDevs] = useState<Developer[]>([]);
-  const [editingDev, setEditingDev] = useState<string | null>(null); // Altere o tipo de editingDev para string
+  const [editingDev, setEditingDev] = useState<string | null>(null);
   const [editedName, setEditedName] = useState("");
 
   useEffect(() => {
@@ -35,13 +34,13 @@ export default function PageOne() {
   async function handleAddDev() {
     try {
       const newDev: Developer = {
-        id: uuidv4(), // Use uuidv4 para gerar um novo UUID
+        id: uuidv4(),
         name: textInput,
       };
 
       await api.post("http://localhost:3333/developers", newDev);
       loadDevs();
-      setTextInput(""); // Limpar o campo de input após adicionar
+      setTextInput("");
     } catch (error) {
       alert("Erro ao cadastrar o dev");
     }
@@ -56,12 +55,21 @@ export default function PageOne() {
 
       const data = { name: newName };
       await api.put(`http://localhost:3333/developers/${id}`, data);
-      console.log("Dev atualizado com sucesso");
-      setEditingDev(null); // Limpar o estado de edição
+      setEditingDev(null);
     } catch (error) {
       alert("Erro ao editar o dev");
     }
   }
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      if (editingDev !== null) {
+        handleEditDev(editingDev, editedName);
+      } else {
+        handleAddDev();
+      }
+    }
+  };
 
   return (
     <main className="p-6 h-screen">
@@ -79,6 +87,7 @@ export default function PageOne() {
                     className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
                     value={editedName}
                     onChange={(e) => setEditedName(e.target.value)}
+                    onKeyDown={handleKeyPress}
                   />
                   <button
                     className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:ring focus:border-green-300"
@@ -108,6 +117,7 @@ export default function PageOne() {
           className="w-full px-4 py-2 my-4 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
           value={textInput}
           onChange={(e) => setTextInput(e.target.value)}
+          onKeyDown={handleKeyPress}
           placeholder="Digite o nome do desenvolvedor"
         />
         <div className="flex justify-center items-center">
