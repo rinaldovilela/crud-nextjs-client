@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid"; // Importe a função v4 do uuid
 import { api } from "../../services/api";
 
 interface Developer {
-  id: number;
+  id: string; // Altere o tipo de id para string
   name: string;
 }
 
@@ -12,7 +13,7 @@ export default function PageOne() {
   const [loading, setLoading] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [devs, setDevs] = useState<Developer[]>([]);
-  const [editingDev, setEditingDev] = useState<number | null>(null);
+  const [editingDev, setEditingDev] = useState<string | null>(null); // Altere o tipo de editingDev para string
   const [editedName, setEditedName] = useState("");
 
   useEffect(() => {
@@ -33,9 +34,12 @@ export default function PageOne() {
 
   async function handleAddDev() {
     try {
-      const data = { name: textInput };
-      const response = await api.post("http://localhost:3333/developers", data);
-      console.log("Dev cadastrado com sucesso", response);
+      const newDev: Developer = {
+        id: uuidv4(), // Use uuidv4 para gerar um novo UUID
+        name: textInput,
+      };
+
+      await api.post("http://localhost:3333/developers", newDev);
       loadDevs();
       setTextInput(""); // Limpar o campo de input após adicionar
     } catch (error) {
@@ -43,7 +47,7 @@ export default function PageOne() {
     }
   }
 
-  async function handleEditDev(id: number, newName: string) {
+  async function handleEditDev(id: string, newName: string) {
     try {
       const updatedDevs = devs.map((dev) =>
         dev.id === id ? { ...dev, name: newName } : dev
